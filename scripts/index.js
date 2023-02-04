@@ -41,11 +41,11 @@ window.addEventListener('load', function() {
       this.screenX = Math.ceil(canvas.width / TILE_SIZE);
       this.screenY = Math.ceil(canvas.height / TILE_SIZE);
 
+      // Find objects
       this.objects = [];
-
-      for (let y = 0; y < map.length; y++) {
+      for (let y = 0; y < this.maxY; y++) {
         const row = map[y];
-        for (let x = 0; x < row.length; x++) {
+        for (let x = 0; x < this.maxX; x++) {
           if (row[x] === '@') {
             this.player = new Player(game, x, y, STATS.player);
             this.objects.push(this.player);
@@ -57,14 +57,32 @@ window.addEventListener('load', function() {
           }
         }
       }
+
+      // Create a 2D array of objects to represent the map
+      // this.grid = [];
+      // for (let y = 0; y < this.maxY; y++) {
+      //   const row = [];
+      //   for (let x = 0; x < this.maxX; x++) {
+      //     if (map[y][x] === '#') {
+      //       row.push({ type: 'wall '});
+      //     } else {
+      //       row.push({ type: 'floor '});
+      //     }
+      //   }
+      //   this.grid.push(row);
+      // }
+
+      // console.log(this.grid);
     }
 
     draw(ctx, offsetX, offsetY) {
       this._drawMap(ctx, offsetX, offsetY);
-      this.objects.forEach((obj) => obj.draw(ctx, offsetX, offsetY));
+      // this.objects.forEach((obj) => obj.draw(ctx, offsetX, offsetY));
     }
 
     _drawMap(ctx, offsetX, offsetY) {
+      // const visibleTiles = this._findVisibleTiles();
+
       for (let y = 0; y < this.screenY; y++) {
         const row = this.map[y + offsetY];
         const tileY = y * TILE_SIZE;
@@ -79,6 +97,115 @@ window.addEventListener('load', function() {
           ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
         }
       }
+
+      this._findVisibleTiles(ctx);
+      // visibleTiles.forEach(([x, y], i) => {
+      //   const x2 = (x + 0.25) * TILE_SIZE;
+      //   const y2 = (y + 0.25) * TILE_SIZE;
+      //   ctx.fillStyle = 'rgb(250, 40, 40, 0.5)';
+      //   ctx.fillRect(x2, y2, TILE_SIZE / 2, TILE_SIZE / 2);
+
+      //   const x3 = (x + 0.4) * TILE_SIZE;
+      //   const y3 = (y + 0.6) * TILE_SIZE;
+      //   ctx.fillStyle = '#222';
+      //   ctx.fillText(i, x3, y3);
+      // });
+    }
+
+
+    _findVisibleTiles(ctx) {
+      const px = this.player.x;
+      const py = this.player.y;
+
+      const frontier = [[px, py]];
+      const visibleTiles = [];
+
+      // Map a coordinate to whether a tile is visible
+      const visitedTiles = {};
+      visitedTiles[`${px},${py}`] = true;
+
+      const cycles = 100;
+      let i = 0;
+
+      while (frontier.length) {
+        if (i++ >= cycles) { break; }
+        const [x, y] = frontier.shift();
+        console.log(`${i}: (${x}, ${y})`);
+
+        // TODO: Test if visible
+        const dx = x - px;
+        const dy = y - py;
+        let visible = false
+        console.log(dx, dy);
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          console.log('dx');
+          console.log(`Test ${x - Math.sign(dx)},${y}`);
+          visible = visitedTiles[`${x - Math.sign(dx)},${y}`]
+        } else if (Math.abs(dy) > Math.abs(dx)) {
+          console.log(`Test ${x},${y - Math.sign(dy)}`);
+          visible = visitedTiles[`${x},${y - Math.sign(dy)}`]
+        } else if (dx === 0) {
+          // dx === 0 and dx === dy, so this is where the player is
+          visible = true;
+        } else {
+          visible = visitedTiles[`${x - Math.sign(dx)},${y - Math.sign(dy)}`]
+        }
+
+        if (!visible) {
+          continue;
+        }
+
+        visibleTiles.push([x, y]);
+
+        // Walls are visible but do not propagate visibility
+        if (this.map[y][x] === '#') { 
+          continue;
+        }
+
+        visitedTiles[`${x},${y}`] = visible;
+
+        // console.log('neighbours');
+        // Add neighbours to frontier
+        for (let i = 0; i < 4; i++) {
+          const [dx, dy] = DELTAS[i];
+          const x2 = x + dx;
+          const y2 = y + dy;
+          if (x2 >= 0 && x2 <= this.maxX && y2 >= 0 && y2 <= this.maxY) {
+            if (visitedTiles[`${x2},${y2}`] === undefined) {
+              // console.log(`${x2},${y2}`);
+              // console.log(visitedTiles);
+
+              // Mark as visited so we don't check again
+              // But set as not visible as we assume it's not initially
+              visitedTiles[`${x2},${y2}`] = false;
+              frontier.push([x2, y2]);
+            }
+          }
+        }
+      }
+
+      // console.log(visitedTiles);
+      // console.log(visibleTiles);
+      const x2 = (px + 0.1) * TILE_SIZE;
+      const y2 = (py + 0.1) * TILE_SIZE;
+      ctx.fillStyle = 'rgb(250, 40, 40, 0.85)';
+      ctx.fillRect(x2, y2, TILE_SIZE * 0.8, TILE_SIZE * 0.8);
+
+      for (const tile in visitedTiles) {
+        // console.log(tile, visitedTiles[tile]); 
+        const [x, y] = tile.split(',');
+        const x2 = (parseInt(x) + 0.25) * TILE_SIZE;
+        const y2 = (parseInt(y) + 0.25) * TILE_SIZE;
+        if (visitedTiles[tile]) {
+          ctx.fillStyle = 'rgb(250, 40, 40, 0.5)';
+        } else if (visitedTiles[tile] === false) {
+          ctx.fillStyle = 'rgb(0, 0, 80, 0.5)';
+        }
+        ctx.fillRect(x2, y2, TILE_SIZE / 2, TILE_SIZE / 2);
+      }
+
+      return visibleTiles;
     }
 
     canMoveTo(x, y) {
