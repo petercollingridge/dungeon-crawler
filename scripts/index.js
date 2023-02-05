@@ -78,7 +78,6 @@ window.addEventListener('load', function() {
       const visibleTiles = this._findVisibleTiles();
 
       const tile = this.map[this.player.y][this.player.x];
-      console.log(tile)
 
       visibleTiles.forEach(([x, y]) => {
         const tile = this.map[y][x];
@@ -92,7 +91,7 @@ window.addEventListener('load', function() {
         ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
 
         if (tile.content) {
-          tile.content.draw(ctx, offsetX, offsetY);
+          tile.content.draw(ctx, tileX, tileY);
         }
       })
     }
@@ -166,10 +165,7 @@ window.addEventListener('load', function() {
 
     canMoveTo(x, y) {
       // Check map bounds
-      if (y < 0 || y >= this.maxY) {
-        return false;
-      }
-      if (x < 0 || x >= this.maxX) {
+      if (y < 0 || y >= this.maxY || x < 0 || x >= this.maxX) {
         return false;
       }
 

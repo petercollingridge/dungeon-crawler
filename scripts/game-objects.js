@@ -4,14 +4,12 @@ class GameObject {
     this.y = y;
   }
 
-  draw(ctx, offsetX, offsetY) {
-    const x = (this.x + 0.5 - offsetX) * TILE_SIZE;
-    const y = (this.y + 0.5 - offsetY) * TILE_SIZE;
-
+  draw(ctx, tileX, tileY) {
     if (this.drawImage) {
+      const x = tileX + 0.5 * TILE_SIZE;
+      const y = tileY + 0.5 * TILE_SIZE;
       this.drawImage(ctx, x, y)
     }
-
   }
 }
 
@@ -29,8 +27,11 @@ class Character extends GameObject {
     const newY = this.y + dy;
     const newSpace = this.game.dungeon.canMoveTo(newX, newY);
     if (newSpace) {
+      // Remove from old tiel
       const map = this.game.dungeon.map;
       map[this.y][this.x].content = false;
+
+      // Add to new tile
       this.x = newX;
       this.y = newY;
       map[this.y][this.x].content = this;
