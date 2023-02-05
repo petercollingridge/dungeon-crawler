@@ -93,7 +93,7 @@ window.addEventListener('load', function() {
           // Tile visible this time are fully visible, otherwise they are faded
           const opacity = tile.visible === this.drawCount ? 1 : 0.5;
           if (tile.type === 'wall') {
-            ctx.fillStyle = `rgb(110, 80, 30, ${opacity})`;
+            ctx.fillStyle = `rgb(100, 70, 20, ${opacity})`;
           } else {
             ctx.fillStyle = `rgb(225, 220, 200, ${opacity})`;
           }
@@ -213,7 +213,7 @@ window.addEventListener('load', function() {
       this.game = game;
       this.header = document.getElementById('sidebar-header');
       this.contents = document.getElementById('sidebar-contents');
-      this.statsTypes = ['xp', 'gold', 'attack', 'defend'];
+      this.statsTypes = ['xp', 'gold', 'speed', 'attack', 'defend'];
     }
 
     update(obj) {
