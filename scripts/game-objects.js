@@ -27,7 +27,7 @@ class Character extends GameObject {
     const newY = this.y + dy;
     const newSpace = this.game.dungeon.canMoveTo(newX, newY);
     if (newSpace) {
-      // Remove from old tiel
+      // Remove from old tile
       const map = this.game.dungeon.map;
       map[this.y][this.x].content = false;
 

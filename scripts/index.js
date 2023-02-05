@@ -77,8 +77,6 @@ window.addEventListener('load', function() {
     _drawMap(ctx, offsetX, offsetY) {
       const visibleTiles = this._findVisibleTiles();
 
-      const tile = this.map[this.player.y][this.player.x];
-
       visibleTiles.forEach(([x, y]) => {
         const tile = this.map[y][x];
         if (tile.type === 'wall') {
@@ -95,7 +93,6 @@ window.addEventListener('load', function() {
         }
       })
     }
-
 
     _findVisibleTiles(ctx) {
       const px = this.player.x;
@@ -194,16 +191,7 @@ window.addEventListener('load', function() {
         return null;
       }
 
-      if (this.map[y][x] === '#') {
-        return 'Wall';
-      }
-
-      const item = checkCollision(this.objects, x, y);
-      if (item) {
-        return item;
-      } else {
-        return 'Floor';
-      }
+      return this.map[y][x].content || this.map[y][x].type;
     }
   }
 
