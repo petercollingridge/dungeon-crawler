@@ -39,6 +39,7 @@ window.addEventListener('load', function() {
       this.maxY = map.length;
       this.screenX = Math.ceil(canvas.width / TILE_SIZE);
       this.screenY = Math.ceil(canvas.height / TILE_SIZE);
+      this.drawCount = 0;
 
       // Use map to create a grid of tiles
       this.map = [];
@@ -69,40 +70,53 @@ window.addEventListener('load', function() {
     }
 
     draw(ctx, offsetX, offsetY) {
+      this.drawCount++;
       ctx.fillStyle = '#112';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       this._drawMap(ctx, offsetX, offsetY);
     }
 
     _drawMap(ctx, offsetX, offsetY) {
-      const visibleTiles = this._findVisibleTiles();
+      this._findVisibleTiles();
 
-      visibleTiles.forEach(([x, y]) => {
-        const tile = this.map[y][x];
-        if (tile.type === 'wall') {
-          ctx.fillStyle = '#666';
-        } else {
-          ctx.fillStyle = '#ddd';
-        }
-        const tileX = (x - offsetX) * TILE_SIZE;
-        const tileY = (y - offsetY) * TILE_SIZE;
-        ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+      for (let y = 0; y < this.screenY; y++) {
+        const row = this.map[y + offsetY];
+        const tileY = y * TILE_SIZE;
 
-        if (tile.content) {
-          tile.content.draw(ctx, tileX, tileY);
+        for (let x = 0; x < this.screenX; x++) {
+          const tile = row[x + offsetX];
+          // Don't draw tiles that have never been seen
+          if (!tile.visible) {
+            continue;
+          }
+
+          // Tile visible this time are fully visible, otherwise they are faded
+          const opacity = tile.visible === this.drawCount ? 1 : 0.5;
+          if (tile.type === 'wall') {
+            ctx.fillStyle = `rgb(110, 80, 30, ${opacity})`;
+          } else {
+            ctx.fillStyle = `rgb(225, 220, 200, ${opacity})`;
+          }
+
+          const tileX = x * TILE_SIZE;
+          ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+
+          if (tile.content && opacity === 1) {
+            tile.content.draw(ctx, tileX, tileY);
+          }
         }
-      })
+      }
     }
 
-    _findVisibleTiles(ctx) {
+    _findVisibleTiles() {
       const px = this.player.x;
       const py = this.player.y;
-
       const frontier = [[px, py]];
-      const visibleTiles = [];
 
       // Map a coordinate to whether a tile is visible
       const visitedTiles = {};
+
+      // Tile with player is always visible
       visitedTiles[`${px},${py}`] = true;
 
       while (frontier.length) {
@@ -121,6 +135,7 @@ window.addEventListener('load', function() {
           const t = i / length;
           const sx = x + Math.round(t * dx);
           const sy = y + Math.round(t * dy);
+          // If we hit a tile that's not visited, then it must be blocked
           if (!visitedTiles[`${sx},${sy}`]) {
             visible = false;
             break;
@@ -129,7 +144,7 @@ window.addEventListener('load', function() {
 
         // Walls are visible but do not propagate visibility
         if (this.map[y][x].type === 'wall') {
-          visibleTiles.push([x, y]);
+          this.map[y][x].visible = this.drawCount;
           continue;
         }
 
@@ -137,7 +152,7 @@ window.addEventListener('load', function() {
           continue;
         }
 
-        visibleTiles.push([x, y]);
+        this.map[y][x].visible = this.drawCount;
         visitedTiles[`${x},${y}`] = true;
 
         // Add neighbours to frontier
@@ -156,8 +171,6 @@ window.addEventListener('load', function() {
           }
         }
       }
-
-      return visibleTiles;
     }
 
     canMoveTo(x, y) {
@@ -253,16 +266,17 @@ window.addEventListener('load', function() {
     _findOffset() {
       const px = (this.dungeon.player.x - this.offsetX) * TILE_SIZE;
       const py = (this.dungeon.player.y - this.offsetY) * TILE_SIZE;
+      const p = 0.3;
       
-      if (px > canvas.width * 0.8 && this.offsetX < this.maxOffsetX) {
+      if (px > canvas.width * (1 - p) && this.offsetX < this.maxOffsetX) {
         this.offsetX++;
-      } else if (px < canvas.width * 0.2 && this.offsetX > 0) {
+      } else if (px < canvas.width * p && this.offsetX > 0) {
         this.offsetX--;
       }
 
-      if (py > canvas.height * 0.8 && this.offsetY < this.maxOffsetY) {
+      if (py > canvas.height * (1 - p) && this.offsetY < this.maxOffsetY) {
         this.offsetY++;
-      } else if (py < canvas.height * 0.2 && this.offsetY > 0) {
+      } else if (py < canvas.height * p && this.offsetY > 0) {
         this.offsetY--;
       }
     }

@@ -1,4 +1,4 @@
-const TILE_SIZE = 40;
+const TILE_SIZE = 36;
 const PLAYER_SIZE = TILE_SIZE * 0.44;
 
 const dungeonMap = [
@@ -7,7 +7,7 @@ const dungeonMap = [
   '      # #*       ########### #',
   '      #          #         # #',
   '#######      #   #         # #',
-  '          @      #         # #',
+  '@                #         # #',
   '                 #         # #',
   '#######  #       #     1   # #',
   '      #      1111#         # #',
