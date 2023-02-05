@@ -29,8 +29,11 @@ class Character extends GameObject {
     const newY = this.y + dy;
     const newSpace = this.game.dungeon.canMoveTo(newX, newY);
     if (newSpace) {
+      const map = this.game.dungeon.map;
+      map[this.y][this.x].content = false;
       this.x = newX;
       this.y = newY;
+      map[this.y][this.x].content = this;
 
       if (this.pickUp) {
         this.pickUp(newSpace);
@@ -114,7 +117,6 @@ class Gold extends GameObject {
   constructor(x, y, amount) {
     super(x, y);
     this.name = 'Gold: ' + amount;
-    this.canPickUp = true;
     this.amount = amount;
     this.r = TILE_SIZE * 0.25;
   }
@@ -133,5 +135,9 @@ class Gold extends GameObject {
     ctx.fillStyle = '#830';
     ctx.font = "12px Georgia";
     ctx.fillText(this.amount, x, y);
+  }
+
+  pickUp(player) {
+    player.gold += this.amount;
   }
 }

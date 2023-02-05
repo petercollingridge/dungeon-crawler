@@ -35,59 +35,54 @@ window.addEventListener('load', function() {
   class Dungeon {
     constructor(game, map) {
       this.game = game;
-      this.map = map;
       this.maxX = map[0].length;
       this.maxY = map.length;
       this.screenX = Math.ceil(canvas.width / TILE_SIZE);
       this.screenY = Math.ceil(canvas.height / TILE_SIZE);
 
-      // Find objects
-      this.objects = [];
+      // Use map to create a grid of tiles
+      this.map = [];
       for (let y = 0; y < this.maxY; y++) {
-        const row = map[y];
+        const tileRow = [];
+        const mapRow = map[y];
+        this.map.push(tileRow);
+
         for (let x = 0; x < this.maxX; x++) {
-          if (row[x] === '@') {
-            this.player = new Player(game, x, y, STATS.player);
-            this.objects.push(this.player);
-          } else if (row[x] === '1') {
-            const enemy = new Goblin(game, x, y, STATS.goblin);
-            this.objects.push(enemy);
-          } else if (row[x] === '*') {
-            this.objects.push(new Gold(x, y, 25));
+          if (mapRow[x] === '#') {
+            tileRow.push({ type: 'wall' });
+          } else {
+            const tile = { type: 'floor' }
+            tileRow.push(tile);
+            // Add tile contents
+            if (mapRow[x] === '@') {
+              this.player = new Player(game, x, y, STATS.player);
+              tile.content = this.player;
+            } else if (mapRow[x] === '1') {
+              const enemy = new Goblin(game, x, y, STATS.goblin);
+              tile.content = enemy;
+            } else if (mapRow[x] === '*') {
+              tile.content = new Gold(x, y, 25);
+            }
           }
         }
       }
-
-      // Create a 2D array of objects to represent the map
-      // this.grid = [];
-      // for (let y = 0; y < this.maxY; y++) {
-      //   const row = [];
-      //   for (let x = 0; x < this.maxX; x++) {
-      //     if (map[y][x] === '#') {
-      //       row.push({ type: 'wall '});
-      //     } else {
-      //       row.push({ type: 'floor '});
-      //     }
-      //   }
-      //   this.grid.push(row);
-      // }
-
-      // console.log(this.grid);
     }
 
     draw(ctx, offsetX, offsetY) {
       ctx.fillStyle = '#112';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       this._drawMap(ctx, offsetX, offsetY);
-      this.objects.forEach((obj) => obj.draw(ctx, offsetX, offsetY));
     }
 
     _drawMap(ctx, offsetX, offsetY) {
       const visibleTiles = this._findVisibleTiles();
 
+      const tile = this.map[this.player.y][this.player.x];
+      console.log(tile)
+
       visibleTiles.forEach(([x, y]) => {
-        if (this.map[y][x] === '#') {
+        const tile = this.map[y][x];
+        if (tile.type === 'wall') {
           ctx.fillStyle = '#666';
         } else {
           ctx.fillStyle = '#ddd';
@@ -95,6 +90,10 @@ window.addEventListener('load', function() {
         const tileX = (x - offsetX) * TILE_SIZE;
         const tileY = (y - offsetY) * TILE_SIZE;
         ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+
+        if (tile.content) {
+          tile.content.draw(ctx, offsetX, offsetY);
+        }
       })
     }
 
@@ -133,7 +132,7 @@ window.addEventListener('load', function() {
         }
 
         // Walls are visible but do not propagate visibility
-        if (this.map[y][x] === '#') {
+        if (this.map[y][x].type === 'wall') {
           visibleTiles.push([x, y]);
           continue;
         }
@@ -150,7 +149,7 @@ window.addEventListener('load', function() {
           const [dx, dy] = DELTAS[i];
           const x2 = x + dx;
           const y2 = y + dy;
-          if (x2 >= 0 && x2 <= this.maxX && y2 >= 0 && y2 <= this.maxY) {
+          if (x2 >= 0 && x2 < this.maxX && y2 >= 0 && y2 < this.maxY) {
             if (visitedTiles[`${x2},${y2}`] === undefined) {
 
               // Mark as visited so we don't check again
@@ -175,17 +174,16 @@ window.addEventListener('load', function() {
       }
 
       // Hit wall
-      if (this.map[y][x] === '#') {
+      if (this.map[y][x].type === 'wall') {
         return false;
       }
 
-      // Check for collision with enemies and objects
-      const hitItem = checkCollision(this.objects, x, y);
-      if (hitItem) {
-        if (!hitItem.canPickUp) {
+      const content = this.map[y][x].content;
+      if (content) {
+        if (!content.pickUp) {
           return false;
         }
-        return hitItem;
+        return content;
       }
 
       return true;
