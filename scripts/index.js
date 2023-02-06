@@ -213,22 +213,23 @@ window.addEventListener('load', function() {
       this.game = game;
       this.header = document.getElementById('sidebar-header');
       this.contents = document.getElementById('sidebar-contents');
-      this.statsTypes = ['xp', 'gold', 'speed', 'attack', 'defend'];
+      this.statsTypes = ['xp', 'gold', 'speed', 'moveRemaining', 'attack', 'defend'];
     }
 
-    update(obj) {
+    update() {
+      const item = this.game.selectedItem;
       this.contents.innerHTML = '';
 
-      if (typeof obj === 'string') {
-        this.header.innerText = obj;
-      } else {
-        this.header.innerText = obj.name;
+      if (typeof item === 'string') {
+        this.header.innerText = item;
+      } else if (item) {
+        this.header.innerText = item.name;
         const ul = document.createElement('ul');
         
         this.statsTypes.forEach((stat) => {
-          if (obj[stat] !== undefined) {
+          if (item[stat] !== undefined) {
             const li = document.createElement('li');
-            li.innerText = `${stat}: ${obj[stat]}`;
+            li.innerText = `${stat}: ${item[stat]}`;
             ul.appendChild(li);
           }
         });
@@ -255,12 +256,15 @@ window.addEventListener('load', function() {
       this.dungeon.draw(ctx, this.offsetX, this.offsetY);
     }
 
+    update() {
+      this.UI.update();
+    }
+
     click(x, y) {
       const tileX = Math.floor(x / TILE_SIZE) + this.offsetX;
       const tileY = Math.floor(y / TILE_SIZE) + this.offsetY;
-      const clickedItem = this.dungeon.getObjectAt(tileX, tileY);
-      
-      this.UI.update(clickedItem);
+      this.selectedItem = this.dungeon.getObjectAt(tileX, tileY);
+      this.UI.update();
     }
 
     _findOffset() {

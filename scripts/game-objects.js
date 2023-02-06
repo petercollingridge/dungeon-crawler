@@ -20,9 +20,14 @@ class Character extends GameObject {
     Object.keys(data).forEach((stat) => {
       this[stat] = data[stat];
     })
+    this.moveRemaining = this.speed;
   }
 
   move(dx, dy) {
+    if (!this.moveRemaining) {
+      return;
+    }
+
     const newX = this.x + dx;
     const newY = this.y + dy;
     const newSpace = this.game.dungeon.canMoveTo(newX, newY);
@@ -39,6 +44,9 @@ class Character extends GameObject {
       if (this.pickUp) {
         this.pickUp(newSpace);
       }
+
+      this.moveRemaining--;
+      this.game.update();
       this.game.draw();
     }
   }
