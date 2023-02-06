@@ -244,6 +244,7 @@ window.addEventListener('load', function() {
       this.UI = new UI(this);
       this.inputHandler = new InputHandler(this);
       this.dungeon = new Dungeon(this, map);
+      this.turn = 'player';
 
       this.offsetX = 0;
       this.offsetY = 0;
@@ -258,6 +259,12 @@ window.addEventListener('load', function() {
 
     update() {
       this.UI.update();
+    }
+
+    enemyTurn() {
+      console.log('enemy turn');
+      this.turn = 'player';
+      this.dungeon.player.startTurn();
     }
 
     click(x, y) {

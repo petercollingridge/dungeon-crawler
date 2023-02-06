@@ -23,6 +23,10 @@ class Character extends GameObject {
     this.moveRemaining = this.speed;
   }
 
+  startTurn() {
+    this.moveRemaining = this.speed;
+  }
+
   move(dx, dy) {
     if (!this.moveRemaining) {
       return;
@@ -46,6 +50,10 @@ class Character extends GameObject {
       }
 
       this.moveRemaining--;
+      if (this._endMove) {
+        this._endMove();
+      }
+
       this.game.update();
       this.game.draw();
     }
@@ -71,6 +79,12 @@ class Player extends Character {
       this.gold += item.amount;
       const index = this.game.dungeon.objects.indexOf(item);
       this.game.dungeon.objects.splice(index, 1);
+    }
+  }
+
+  _endMove() {
+    if (this.moveRemaining === 0) {
+      this.game.enemyTurn();
     }
   }
 }
