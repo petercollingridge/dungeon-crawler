@@ -213,7 +213,15 @@ window.addEventListener('load', function() {
       this.game = game;
       this.header = document.getElementById('sidebar-header');
       this.contents = document.getElementById('sidebar-contents');
+      this.button = document.getElementById('sidebar-btn');
       this.statsTypes = ['xp', 'gold', 'speed', 'moveRemaining', 'attack', 'defend'];
+
+      this.button.disabled = true;
+      this.button.addEventListener('click', () => {
+        this.game.enemyTurn();
+        this.button.disabled = true;
+        this.button.innerHTML = 'Enemy turn';
+      });
     }
 
     update() {
@@ -236,6 +244,10 @@ window.addEventListener('load', function() {
 
         this.contents.appendChild(ul);
       }
+    }
+
+    endPlayerTurn() {
+      this.button.disabled = false;
     }
   }
 

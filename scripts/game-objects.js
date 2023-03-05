@@ -84,7 +84,7 @@ class Player extends Character {
 
   _endMove() {
     if (this.moveRemaining === 0) {
-      this.game.enemyTurn();
+      this.game.UI.endPlayerTurn();
     }
   }
 }

@@ -22,6 +22,8 @@ body {
 #sidebar {
   height: 100%;
   width: 240px;
+  display: flex;
+  flex-direction: column;
 }
 
 #sidebar h3 {
@@ -30,12 +32,35 @@ body {
 }
 
 #sidebar-contents {
+  flex-grow: 1;
   margin: 1rem;
   line-height: 1.5rem;
 }
 
 #sidebar-contents ul {
   list-style-type: none;
+}
+
+#sidebar-btn-wrapper {
+  display: flex;
+  justify-content: space-around;
+  margin: 0.4rem;
+}
+
+button {
+  padding: 0.4rem 0.6rem;
+  font-size: 100%;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+  background-color: #225;
+  cursor: pointer;
+}
+
+button:disabled {
+  color: #778;
+  background-color: #225;
+  cursor: not-allowed;
 }
 
 #canvas {
