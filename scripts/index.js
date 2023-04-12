@@ -32,6 +32,45 @@ window.addEventListener('load', function() {
     }
   }
 
+  class UI {
+    constructor(game) {
+      this.game = game;
+      this.header = document.getElementById('sidebar-header');
+      this.contents = document.getElementById('sidebar-contents');
+      this.button = document.getElementById('sidebar-btn');
+      this.statsTypes = ['xp', 'gold', 'speed', 'moveRemaining', 'attack', 'defend'];
+
+      this.button.disabled = true;
+      this.button.addEventListener('click', () => {
+        this.game.startEnemyTurn();
+        this.button.disabled = true;
+        this.button.innerHTML = 'Enemy turn';
+      });
+    }
+
+    update() {
+      const item = this.game.selectedItem;
+      this.contents.innerHTML = '';
+
+      if (typeof item === 'string') {
+        this.header.innerText = item;
+      } else if (item) {
+        this.header.innerText = item.name;
+        const ul = document.createElement('ul');
+        
+        this.statsTypes.forEach((stat) => {
+          if (item[stat] !== undefined) {
+            const li = document.createElement('li');
+            li.innerText = `${stat}: ${item[stat]}`;
+            ul.appendChild(li);
+          }
+        });
+
+        this.contents.appendChild(ul);
+      }
+    }
+  }
+
   class Dungeon {
     constructor(game, map) {
       this.game = game;
@@ -217,55 +256,11 @@ window.addEventListener('load', function() {
     }
   }
 
-  class UI {
-    constructor(game) {
-      this.game = game;
-      this.header = document.getElementById('sidebar-header');
-      this.contents = document.getElementById('sidebar-contents');
-      this.button = document.getElementById('sidebar-btn');
-      this.statsTypes = ['xp', 'gold', 'speed', 'moveRemaining', 'attack', 'defend'];
-
-      this.button.disabled = true;
-      this.button.addEventListener('click', () => {
-        this.game.enemyTurn();
-        this.button.disabled = true;
-        this.button.innerHTML = 'Enemy turn';
-      });
-    }
-
-    update() {
-      const item = this.game.selectedItem;
-      this.contents.innerHTML = '';
-
-      if (typeof item === 'string') {
-        this.header.innerText = item;
-      } else if (item) {
-        this.header.innerText = item.name;
-        const ul = document.createElement('ul');
-        
-        this.statsTypes.forEach((stat) => {
-          if (item[stat] !== undefined) {
-            const li = document.createElement('li');
-            li.innerText = `${stat}: ${item[stat]}`;
-            ul.appendChild(li);
-          }
-        });
-
-        this.contents.appendChild(ul);
-      }
-    }
-
-    endPlayerTurn() {
-      this.button.disabled = false;
-    }
-  }
-
   class Game {
     constructor(map) {
       this.UI = new UI(this);
       this.inputHandler = new InputHandler(this);
       this.dungeon = new Dungeon(this, map);
-      this.turn = 'player';
 
       this.offsetX = 0;
       this.offsetY = 0;
@@ -282,22 +277,55 @@ window.addEventListener('load', function() {
       this.UI.update();
     }
 
-    enemyTurn() {
-      const player = this.dungeon.player;
-      console.log('enemy turn');
+    startPlayerTurn() {
+      console.log('Start player turn');
+      this.dungeon.player.resetMoves();
+    }
 
-      // Only enemies we have seen move
-      const activeEnemies = this.dungeon.enemies
-        .filter((enemy) => enemy.seen)
-        .sort((a, b) => taxicabDist(a, player) - taxicabDist(b, player))
+    endPlayerTurn() {
+      console.log('End player turn');
+      this.UI.button.disabled = false;
+    }
+
+    startEnemyTurn() {
+      console.log('Start enemy turn');
+
+      // Only consider enemies that have been seen
+      const activeEnemies = this.dungeon.enemies.filter((enemy) => enemy.seen);
+      activeEnemies.forEach((enemy) => enemy.resetMoves());
+
+      this.enemyTurn(activeEnemies);
+    }
+
+    enemyTurn(activeEnemies) {
+      const player = this.dungeon.player;
+
+      // Sort so we move the closest first
+      activeEnemies = activeEnemies.sort(
+        (a, b) => taxicabDist(a, player) - taxicabDist(b, player)
+      );
       
       // Move enemies
+      const stillActiveEnemies = [];
       activeEnemies.forEach((enemy) => {
         enemy.calculateMove();
+        if (enemy.moveRemaining > 0) {
+          stillActiveEnemies.push(enemy);
+        }
       })
 
-      this.turn = 'player';
-      this.dungeon.player.startTurn();
+      if (stillActiveEnemies.length === 0) {
+        this.endEnemyTurn();
+      } else {
+        // Enemy moves again in half a second
+        setTimeout(() => this.enemyTurn(stillActiveEnemies), 500);
+      }
+    }
+
+    endEnemyTurn() {
+      console.log('End enemy turn');
+      this.UI.button.innerHTML = 'End turn';
+      this.startPlayerTurn();
     }
 
     click(x, y) {

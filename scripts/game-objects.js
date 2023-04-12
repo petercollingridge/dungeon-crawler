@@ -23,12 +23,11 @@ class Character extends GameObject {
     this.moveRemaining = this.speed;
   }
 
-  startTurn() {
+  resetMoves() {
     this.moveRemaining = this.speed;
   }
 
   move(dx, dy) {
-    console.log(this.moveRemaining);
     if (!this.moveRemaining) {
       return;
     }
@@ -51,7 +50,7 @@ class Character extends GameObject {
       }
 
       this.moveRemaining--;
-      if (this._endMove) {
+      if (this.moveRemaining === 0 && this._endMove) {
         this._endMove();
       }
 
@@ -84,9 +83,7 @@ class Player extends Character {
   }
 
   _endMove() {
-    if (this.moveRemaining === 0) {
-      this.game.UI.endPlayerTurn();
-    }
+    this.game.endPlayerTurn();
   }
 }
 
@@ -103,25 +100,33 @@ class Enemy extends Character {
     const sx = Math.sign(dx);
     const sy = Math.sign(dy);
 
-    // If dx and dy are the same, then randomly pick one
-    const tiebreak = abs(dx) === abs(dy) ? Math.random() - 0.5 : 0;
-
     const testMove = (dx, dy) => {
       return this.game.dungeon.canMoveTo(this.x + dx, this.y + dy);
     };
 
-    let moveX = 0;
-    let moveY = 0;
-    if (abs(dx) > abs(dy) + tiebreak && testMove(sx, 0)) {
-      moveX = sx;
-    } else if (testMove(0, sy)) {
-      moveY = sy;
+    let moveX = testMove(sx, 0) ? sx : 0;
+    let moveY = testMove(0, sy) ? sy : 0;
+
+    // If enemy can move in both directions then pick ome
+    if (moveX && moveY) {
+      // If dx and dy are the same, then randomly pick one
+      const tiebreak = abs(dx) === abs(dy) ? Math.random() - 0.5 : 0;
+
+      if (abs(dx) > abs(dy) + tiebreak) {
+        moveY = 0;
+      } else {
+        moveX = 0;
+      }
     }
+
 
     console.log(moveX, moveY);
 
     if (moveX || moveY) {
       this.move(moveX, moveY);
+    } else {
+      // Can't move so don't keep trying
+      this.moveRemaining = 0;
     }
   }
 }
