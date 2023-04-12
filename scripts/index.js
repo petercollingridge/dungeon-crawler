@@ -39,6 +39,7 @@ window.addEventListener('load', function() {
       this.maxY = map.length;
       this.screenX = Math.ceil(canvas.width / TILE_SIZE);
       this.screenY = Math.ceil(canvas.height / TILE_SIZE);
+      this.enemies = [];
       this.drawCount = 0;
 
       // Use map to create a grid of tiles
@@ -60,6 +61,7 @@ window.addEventListener('load', function() {
               tile.content = this.player;
             } else if (mapRow[x] === '1') {
               const enemy = new Goblin(game, x, y, STATS.goblin);
+              this.enemies.push(enemy);
               tile.content = enemy;
             } else if (mapRow[x] === '*') {
               tile.content = new Gold(x, y, 25);
@@ -121,6 +123,7 @@ window.addEventListener('load', function() {
 
       while (frontier.length) {
         const [x, y] = frontier.shift();
+        const tile = this.map[y][x];
 
         // Test if visible by drawing a line from this tile to the player
         // If we hit an non-visible tile then this is not visible
@@ -143,8 +146,8 @@ window.addEventListener('load', function() {
         }
 
         // Walls are visible but do not propagate visibility
-        if (this.map[y][x].type === 'wall') {
-          this.map[y][x].visible = this.drawCount;
+        if (tile.type === 'wall') {
+          tile.visible = this.drawCount;
           continue;
         }
 
@@ -152,8 +155,14 @@ window.addEventListener('load', function() {
           continue;
         }
 
-        this.map[y][x].visible = this.drawCount;
+        // Mark tile as visible
+        tile.visible = this.drawCount;
         visitedTiles[`${x},${y}`] = true;
+
+        // Enemies on tile are seen
+        if (tile.content && tile.content.type === 'enemy') {
+          tile.content.seen = true;
+        }
 
         // Add neighbours to frontier
         for (let i = 0; i < 4; i++) {
@@ -274,7 +283,19 @@ window.addEventListener('load', function() {
     }
 
     enemyTurn() {
+      const player = this.dungeon.player;
       console.log('enemy turn');
+
+      // Only enemies we have seen move
+      const activeEnemies = this.dungeon.enemies
+        .filter((enemy) => enemy.seen)
+        .sort((a, b) => taxicabDist(a, player) - taxicabDist(b, player))
+      
+      // Move enemies
+      activeEnemies.forEach((enemy) => {
+        enemy.calculateMove();
+      })
+
       this.turn = 'player';
       this.dungeon.player.startTurn();
     }

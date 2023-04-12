@@ -1,3 +1,5 @@
+const abs = Math.abs;
+
 const DELTAS = [[-1, 0], [0, 1], [1, 0], [0, -1]];
 
 function checkCollision(arr, x, y) {
@@ -7,4 +9,8 @@ function checkCollision(arr, x, y) {
       return item;
     }
   }
+}
+
+function taxicabDist(a, b) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }

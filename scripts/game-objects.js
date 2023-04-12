@@ -28,6 +28,7 @@ class Character extends GameObject {
   }
 
   move(dx, dy) {
+    console.log(this.moveRemaining);
     if (!this.moveRemaining) {
       return;
     }
@@ -92,6 +93,36 @@ class Player extends Character {
 class Enemy extends Character {
   constructor(game, x, y, data) {
     super(game, x, y, data);
+    this.type = 'enemy';
+  }
+
+  calculateMove() {
+    const player = this.game.dungeon.player;
+    const dx = player.x - this.x;
+    const dy = player.y - this.y;
+    const sx = Math.sign(dx);
+    const sy = Math.sign(dy);
+
+    // If dx and dy are the same, then randomly pick one
+    const tiebreak = abs(dx) === abs(dy) ? Math.random() - 0.5 : 0;
+
+    const testMove = (dx, dy) => {
+      return this.game.dungeon.canMoveTo(this.x + dx, this.y + dy);
+    };
+
+    let moveX = 0;
+    let moveY = 0;
+    if (abs(dx) > abs(dy) + tiebreak && testMove(sx, 0)) {
+      moveX = sx;
+    } else if (testMove(0, sy)) {
+      moveY = sy;
+    }
+
+    console.log(moveX, moveY);
+
+    if (moveX || moveY) {
+      this.move(moveX, moveY);
+    }
   }
 }
 
