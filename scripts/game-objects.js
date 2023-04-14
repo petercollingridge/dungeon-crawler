@@ -34,8 +34,16 @@ class Character extends GameObject {
 
     const newX = this.x + dx;
     const newY = this.y + dy;
-    const newSpace = this.game.dungeon.canMoveTo(newX, newY);
-    if (newSpace) {
+    let obstruction = this.game.dungeon.checkIfBlocked(newX, newY);
+
+    console.log(obstruction);
+
+    if (obstruction && obstruction.pickUp && this.pickUp) {
+      this.pickUp(obstruction);
+      obstruction = false;
+    }
+
+    if (!obstruction) {
       // Remove from old tile
       const map = this.game.dungeon.map;
       map[this.y][this.x].content = false;
@@ -44,10 +52,6 @@ class Character extends GameObject {
       this.x = newX;
       this.y = newY;
       map[this.y][this.x].content = this;
-
-      if (this.pickUp) {
-        this.pickUp(newSpace);
-      }
 
       this.moveRemaining--;
       if (this.moveRemaining === 0 && this._endMove) {
@@ -101,7 +105,7 @@ class Enemy extends Character {
     const sy = Math.sign(dy);
 
     const testMove = (dx, dy) => {
-      return this.game.dungeon.canMoveTo(this.x + dx, this.y + dy);
+      return !this.game.dungeon.checkIfBlocked(this.x + dx, this.y + dy);
     };
 
     let moveX = testMove(sx, 0) ? sx : 0;

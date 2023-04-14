@@ -221,26 +221,23 @@ window.addEventListener('load', function() {
       }
     }
 
-    canMoveTo(x, y) {
+    checkIfBlocked(x, y) {
       // Check map bounds
       if (y < 0 || y >= this.maxY || x < 0 || x >= this.maxX) {
-        return false;
+        return true;
       }
 
       // Hit wall
       if (this.map[y][x].type === 'wall') {
-        return false;
+        return true;
       }
 
       const content = this.map[y][x].content;
       if (content) {
-        if (!content.pickUp) {
-          return false;
-        }
         return content;
       }
 
-      return true;
+      return false;
     }
 
     getObjectAt(x, y) {
