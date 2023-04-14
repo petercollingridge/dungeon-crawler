@@ -36,11 +36,15 @@ class Character extends GameObject {
     const newY = this.y + dy;
     let obstruction = this.game.dungeon.checkIfBlocked(newX, newY);
 
-    console.log(obstruction);
-
-    if (obstruction && obstruction.pickUp && this.pickUp) {
-      this.pickUp(obstruction);
-      obstruction = false;
+    if (obstruction) {
+      if (this.isEnemy(obstruction.type)) {
+        console.log(this.name + ' attack');
+        this._endMove();
+      }
+      if (obstruction.pickUp && this.pickUp) {
+        this.pickUp(obstruction);
+        obstruction = false;
+      }
     }
 
     if (!obstruction) {
@@ -78,6 +82,10 @@ class Player extends Character {
     ctx.fill();
   }
 
+  isEnemy(type) {
+    return type === 'enemy';
+  }
+
   pickUp(item) {
     if (item.canPickUp) {
       this.gold += item.amount;
@@ -97,12 +105,22 @@ class Enemy extends Character {
     this.type = 'enemy';
   }
 
+  isEnemy(type) {
+    return type === 'Player';
+  }
+
   calculateMove() {
     const player = this.game.dungeon.player;
     const dx = player.x - this.x;
     const dy = player.y - this.y;
     const sx = Math.sign(dx);
     const sy = Math.sign(dy);
+
+    if (abs(dx) + abs(dy) === 1) {
+      console.log('Enemy attack');
+      this.moveRemaining = 0;
+      return;
+    }
 
     const testMove = (dx, dy) => {
       return !this.game.dungeon.checkIfBlocked(this.x + dx, this.y + dy);
@@ -122,9 +140,6 @@ class Enemy extends Character {
         moveX = 0;
       }
     }
-
-
-    console.log(moveX, moveY);
 
     if (moveX || moveY) {
       this.move(moveX, moveY);
