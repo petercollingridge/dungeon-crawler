@@ -39,15 +39,14 @@ class Character extends GameObject {
     if (obstruction) {
       if (this.isEnemy(obstruction.type)) {
         this.attack(obstruction);
+        this.moveRemaining = 0;
         this._endMove();
       }
       if (obstruction.pickUp && this.pickUp) {
         this.pickUp(obstruction);
         obstruction = false;
       }
-    }
-
-    if (!obstruction) {
+    } else {
       // Remove from old tile
       const map = this.game.dungeon.map;
       map[this.y][this.x].content = false;
@@ -58,13 +57,14 @@ class Character extends GameObject {
       map[this.y][this.x].content = this;
 
       this.moveRemaining--;
-      if (this.moveRemaining === 0 && this._endMove) {
-        this._endMove();
-      }
-
-      this.game.update();
-      this.game.draw();
     }
+
+    if (this.moveRemaining === 0 && this._endMove) {
+      this._endMove();
+    }
+
+    this.game.update();
+    this.game.draw();
   }
 
   attack(target) {
