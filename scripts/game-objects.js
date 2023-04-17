@@ -167,7 +167,7 @@ class Enemy extends Character {
     const sy = Math.sign(dy);
 
     if (abs(dx) + abs(dy) === 1) {
-      console.log('Enemy attack');
+      this.attack(player);
       this.moveRemaining = 0;
       return;
     }
