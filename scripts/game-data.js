@@ -43,15 +43,16 @@ const STATS = {
   player: {
     health: 20,
     speed: 3,
-    attack: 5,
-    defend: 4,
+    attackValue: 5,
+    defendValue: 4,
     xp: 0,
     gold: 0,
   },
   goblin: {
     speed: 4,
     health: 3,
-    attack: 3,
-    defend: 1,
+    attackValue: 3,
+    defendValue: 1,
+    critical: 0.01,
   },
 };

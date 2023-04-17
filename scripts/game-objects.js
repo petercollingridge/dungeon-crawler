@@ -38,7 +38,7 @@ class Character extends GameObject {
 
     if (obstruction) {
       if (this.isEnemy(obstruction.type)) {
-        console.log(this.name + ' attack');
+        this.attack(obstruction);
         this._endMove();
       }
       if (obstruction.pickUp && this.pickUp) {
@@ -66,12 +66,58 @@ class Character extends GameObject {
       this.game.draw();
     }
   }
+
+  attack(target) {
+    const baseAttack = 6;
+
+    console.log(`${this.name} attacks ${target.name}`);
+
+    const attackRoll = this._roll(baseAttack, this.attackValue);
+
+    if (attackRoll === 'FUMBLE') {
+      console.log(`${this.name} fumbles`);
+      target.attack(this);
+      return;
+    }
+
+    const defendValue = 1 + Math.floor(Math.random() * baseAttack) + target.defendValue;
+
+    let damage = 0;
+    if (attackRoll === 'CRITICAL') {
+      console.log('Critical Hit!');
+      damage = Math.max(1, baseAttack + this.attackValue - defendValue) * 2;
+    } else if (attackRoll > defendValue) {
+      console.log(`${this.name} hits`);
+      damage = attackRoll - defendValue;
+    } else {
+      console.log(`${target.name} defends`);
+      return;
+    }
+
+    console.log(`${target.name} takes ${damage} damage`);
+    target.health -= damage;
+  }
+
+  _roll(n = 10, modifier = 0) {
+    const rawValue = Math.random();
+    if (rawValue > 1 - this.critical) {
+      return 'CRITICAL';
+    }
+
+    const roundValue = 1 + Math.floor(rawValue * n);
+    if (roundValue === 1) {
+      return 'FUMBLE';
+    } else {
+      return roundValue + modifier;
+    }
+  }
 }
 
 class Player extends Character {
   constructor(game, x, y, data) {
     super(game, x, y, data);
     this.name = 'Player';
+    this._calculateCritical();
   }
 
   drawImage(ctx, x, y) {
@@ -92,6 +138,10 @@ class Player extends Character {
       const index = this.game.dungeon.objects.indexOf(item);
       this.game.dungeon.objects.splice(index, 1);
     }
+  }
+
+  _calculateCritical() {
+    this.critical = (this.xp + 3) / (this.xp * 5 + 75)
   }
 
   _endMove() {

@@ -14,3 +14,8 @@ function checkCollision(arr, x, y) {
 function taxicabDist(a, b) {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
+
+// Random number in the range 1 - n
+function randInt(n) {
+  return Math.floor(Math.random() * n) + 1;
+}
