@@ -269,6 +269,7 @@ window.addEventListener('load', function() {
       this.UI = new UI(this);
       this.inputHandler = new InputHandler(this);
       this.dungeon = new Dungeon(this, map);
+      this.textController = new TextController(this);
 
       this.offsetX = 0;
       this.offsetY = 0;
@@ -279,10 +280,16 @@ window.addEventListener('load', function() {
     draw() {
       this._findOffset();
       this.dungeon.draw(ctx, this.offsetX, this.offsetY);
+      this.textController.draw(ctx);
     }
 
     update() {
       this.UI.update();
+      this.textController.update();
+    }
+
+    addText(x, y, text) {
+      this.textController.add(x, y, text);
     }
 
     startPlayerTurn() {
@@ -367,7 +374,20 @@ window.addEventListener('load', function() {
   }
 
   const game = new Game(dungeonMap);
-  game.draw();
+  let lastTime = 0;
+
+  // Animation loop
+  function animate(timeStamp) {
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    game.update(deltaTime);
+    game.draw(ctx);
+    requestAnimationFrame(animate);
+  }
+
+  animate(0); 
 
   // game.select(game.player.x, game.player.y);
 

@@ -6,9 +6,9 @@ class GameObject {
 
   draw(ctx, tileX, tileY) {
     if (this.drawImage) {
-      const x = tileX + 0.5 * TILE_SIZE;
-      const y = tileY + 0.5 * TILE_SIZE;
-      this.drawImage(ctx, x, y)
+      this.imageX = tileX + 0.5 * TILE_SIZE;
+      this.imageY = tileY + 0.5 * TILE_SIZE;
+      this.drawImage(ctx, this.imageX, this.imageY);
     }
   }
 }
@@ -68,14 +68,13 @@ class Character extends GameObject {
   }
 
   attack(target) {
-    const baseAttack = 6;
-
     console.log(`${this.name} attacks ${target.name}`);
-
+    const baseAttack = 6;
     const attackRoll = this._roll(baseAttack, this.attackValue);
 
     if (attackRoll === 'FUMBLE') {
       console.log(`${this.name} fumbles`);
+      this.game.addText(this.imageX, this.imageY - 10, `${this.name} attacks fumbles!`);
       target.attack(this);
       return;
     }
@@ -85,12 +84,15 @@ class Character extends GameObject {
     let damage = 0;
     if (attackRoll === 'CRITICAL') {
       console.log('Critical Hit!');
+      this.game.addText(this.imageX, this.imageY - 10, `Critical hit by ${this.name}!`);
       damage = Math.max(1, baseAttack + this.attackValue - defendValue) * 2;
     } else if (attackRoll > defendValue) {
       console.log(`${this.name} hits`);
       damage = attackRoll - defendValue;
+      this.game.addText(this.imageX, this.imageY - 10, `${this.name} hits for ${damage}`);
     } else {
       console.log(`${target.name} defends`);
+      this.game.addText(this.imageX, this.imageY - 10, `${target.name} defends`);
       return;
     }
 
