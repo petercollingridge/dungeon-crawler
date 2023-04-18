@@ -251,8 +251,23 @@ window.addEventListener('load', function() {
 
       return this.map[y][x].content || this.map[y][x].type;
     }
+
+    removeCharacter(character) {
+      if (character.type == 'Player') {
+        this.game.gameOver();
+      } else {
+        // Remove from map
+        this.map[character.y][character.x].content = false;
+        // Remove from enemy list
+        const index = this.enemies.indexOf(character);
+        if (index > -1) {
+          this.enemies.splice(index, 1);
+        }
+      }
+    }
   }
 
+  // Overall controller of game logic
   class Game {
     constructor(map) {
       this.UI = new UI(this);
@@ -323,6 +338,10 @@ window.addEventListener('load', function() {
       console.log('End enemy turn');
       this.UI.button.innerHTML = 'End turn';
       this.startPlayerTurn();
+    }
+
+    gameOver() {
+      console.log('Game Over');
     }
 
     click(x, y) {

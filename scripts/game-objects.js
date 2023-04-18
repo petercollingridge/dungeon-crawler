@@ -96,6 +96,12 @@ class Character extends GameObject {
 
     console.log(`${target.name} takes ${damage} damage`);
     target.health -= damage;
+
+    if (target.health <= 0) {
+      console.log(`${target.name} killed`);
+      target.health = 0;
+      this.game.dungeon.removeCharacter(target);
+    }
   }
 
   _roll(n = 10, modifier = 0) {
@@ -116,6 +122,7 @@ class Character extends GameObject {
 class Player extends Character {
   constructor(game, x, y, data) {
     super(game, x, y, data);
+    this.type = 'Player';
     this.name = 'Player';
     this._calculateCritical();
   }
