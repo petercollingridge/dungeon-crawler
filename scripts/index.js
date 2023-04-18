@@ -253,16 +253,12 @@ window.addEventListener('load', function() {
     }
 
     removeCharacter(character) {
-      if (character.type == 'Player') {
-        this.game.gameOver();
-      } else {
-        // Remove from map
-        this.map[character.y][character.x].content = false;
-        // Remove from enemy list
-        const index = this.enemies.indexOf(character);
-        if (index > -1) {
-          this.enemies.splice(index, 1);
-        }
+      // Remove from map
+      this.map[character.y][character.x].content = false;
+      // Remove from enemy list
+      const index = this.enemies.indexOf(character);
+      if (index > -1) {
+        this.enemies.splice(index, 1);
       }
     }
   }

@@ -100,7 +100,7 @@ class Character extends GameObject {
     if (target.health <= 0) {
       console.log(`${target.name} killed`);
       target.health = 0;
-      this.game.dungeon.removeCharacter(target);
+      this.kills(target);
     }
   }
 
@@ -122,8 +122,10 @@ class Character extends GameObject {
 class Player extends Character {
   constructor(game, x, y, data) {
     super(game, x, y, data);
+
     this.type = 'Player';
     this.name = 'Player';
+    this.targetXP = 100;
     this._calculateCritical();
   }
 
@@ -147,6 +149,17 @@ class Player extends Character {
     }
   }
 
+  kills(target) {
+    console.log('Gain ' + target.xp + ' XP');
+    this.game.dungeon.removeCharacter(target);
+    this.xp += target.xp;
+    if (this.xp > this.targetXP) {
+      this.level++;
+      this.xp -= this.targetXP;
+      this.targetXP = Math.round(this.targetXP * 0.24) * 5;
+    }
+  }
+
   _calculateCritical() {
     this.critical = (this.xp + 3) / (this.xp * 5 + 75)
   }
@@ -164,6 +177,10 @@ class Enemy extends Character {
 
   isEnemy(type) {
     return type === 'Player';
+  }
+
+  kills() {
+    this.game.gameOver();
   }
 
   calculateMove() {

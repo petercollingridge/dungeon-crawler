@@ -46,6 +46,7 @@ const STATS = {
     attackValue: 5,
     defendValue: 4,
     xp: 0,
+    level: 1,
     gold: 0,
   },
   goblin: {
@@ -53,6 +54,8 @@ const STATS = {
     health: 3,
     attackValue: 3,
     defendValue: 1,
+    level: 1,
+    xp: 20,
     critical: 0.01,
   },
 };
