@@ -333,7 +333,7 @@ window.addEventListener('load', function() {
         this.endEnemyTurn();
       } else {
         // Enemy moves again in half a second
-        setTimeout(() => this.enemyTurn(stillActiveEnemies), 500);
+        setTimeout(() => this.enemyTurn(stillActiveEnemies), 300);
       }
     }
 

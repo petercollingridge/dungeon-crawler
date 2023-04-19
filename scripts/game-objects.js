@@ -152,7 +152,7 @@ class Player extends Character {
   }
 
   kills(target) {
-    console.log('Gain ' + target.xp + ' XP');
+    this.game.addText(this.imageX, this.imageY - 10, `+${target.xp} XP`);
     this.game.dungeon.removeCharacter(target);
     this.xp += target.xp;
     if (this.xp > this.targetXP) {

@@ -21,25 +21,27 @@ class TextController {
 }
 
 class TextParticle {
-  constructor(x, y, text, speed = 1, size = 36) {
+  constructor(x, y, text, speed = 2, size = 28) {
     this.x = x;
     this.y = y;
     this.text = text;
     this.speed = speed;
     this.alpha = 1.0;
     this.toDelete = false;
-    this.font = `${size}px Helvetica`;
+    this.size = size;
   }
 
   update () {
     this.y -= this.speed;
-    this.alpha -= 0.01;
+    this.alpha -= 0.008;
+    this.size += 0.3;
     if (this.y < -20 || this.alpha <= 0) {
       this.toDelete = true;
     }
   }
   
   draw(ctx) {
+    this.font = `${this.size}px Bangers`;
     ctx.fillStyle = `rgba(255, 0, 0, ${this.alpha})`;
     ctx.font = this.font;
     ctx.fillText(this.text, this.x, this.y);
