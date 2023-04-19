@@ -283,9 +283,9 @@ window.addEventListener('load', function() {
       this.textController.draw(ctx);
     }
 
-    update() {
+    update(dt) {
       this.UI.update();
-      this.textController.update();
+      this.textController.update(dt);
     }
 
     addText(x, y, text) {
@@ -378,11 +378,11 @@ window.addEventListener('load', function() {
 
   // Animation loop
   function animate(timeStamp) {
-    const deltaTime = timeStamp - lastTime;
+    const dt = timeStamp - lastTime;
     lastTime = timeStamp;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    game.update(deltaTime);
+    game.update(dt);
     game.draw(ctx);
     requestAnimationFrame(animate);
   }
