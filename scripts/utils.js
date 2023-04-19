@@ -19,3 +19,7 @@ function taxicabDist(a, b) {
 function randInt(n) {
   return Math.floor(Math.random() * n) + 1;
 }
+
+function randRange(a, b) {
+  return Math.random() * (b - a) + a;
+}

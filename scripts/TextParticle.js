@@ -46,21 +46,26 @@ class TextController {
 }
 
 class TextParticle {
-  constructor(x, y, text, speed = 1.75, size = 28) {
+  constructor(x, y, text, size = 28) {
     this.x = x;
     this.y = y;
     this.text = text;
-    this.speed = speed;
     this.alpha = 1.0;
     this.toDelete = false;
     this.size = size;
+
+    const speed = 1.8;
+    const angle = Math.PI * randRange(0.3, 0.7);
+    this.dx = speed * Math.cos(angle);
+    this.dy = -speed * Math.sin(angle);
   }
 
   update () {
-    this.y -= this.speed;
+    this.x += this.dx;
+    this.y += this.dy;
     this.alpha -= 0.0075;
     this.size += 0.3;
-    if (this.y < -20 || this.alpha <= 0) {
+    if (this.alpha <= 0) {
       this.toDelete = true;
     }
   }
