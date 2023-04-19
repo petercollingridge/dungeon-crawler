@@ -72,7 +72,7 @@ class Character extends GameObject {
     const attackRoll = this._roll(baseAttack, this.attackValue);
 
     if (attackRoll === 'FUMBLE') {
-      this.game.addText(this.imageX, this.imageY - 10, `${this.name} fumbles!`);
+      this.addText('Fumble!');
       target.attack(this);
       return;
     }
@@ -81,27 +81,28 @@ class Character extends GameObject {
 
     let damage = 0;
     if (attackRoll === 'CRITICAL') {
-      this.game.addText(this.imageX, this.imageY - 10, `Critical hit by ${this.name}!`);
+      this.addText('Critical hit!');
       damage = Math.max(1, baseAttack + this.attackValue - defendValue) * 2;
-      this.game.addText(this.imageX, this.imageY - 10, `${damage} damage`);
+      target.addText(`-${damage}`);
     } else if (attackRoll > defendValue) {
-      console.log(`${this.name} hits`);
       damage = attackRoll - defendValue;
-      this.game.addText(this.imageX, this.imageY - 10, `${this.name} hits for ${damage}`);
+      target.addText(`-${damage}`);
     } else {
-      console.log(`${target.name} defends`);
-      this.game.addText(this.imageX, this.imageY - 10, `${target.name} defends`);
+      target.addText(`Defend`);
       return;
     }
 
-    console.log(`${target.name} takes ${damage} damage`);
     target.health -= damage;
 
     if (target.health <= 0) {
-      console.log(`${target.name} killed`);
       target.health = 0;
       this.kills(target);
     }
+  }
+
+  addText(text, colour) {
+    colour = colour || this.textColour;
+    this.game.addText(this.imageX, this.imageY - 10, text, colour);
   }
 
   _roll(n = 10, modifier = 0) {
@@ -125,6 +126,7 @@ class Player extends Character {
 
     this.type = 'Player';
     this.name = 'Player';
+    this.textColour = '192, 64, 32';
     this.targetXP = 100;
     this._calculateCritical();
   }
@@ -150,14 +152,17 @@ class Player extends Character {
   }
 
   kills(target) {
-    this.game.addText(this.imageX, this.imageY - 10, `${target.name} killed`);
-    this.game.addText(this.imageX, this.imageY - 10, `+${target.xp} XP`);
+    target.addText(`${target.name} killed`);
     this.game.dungeon.removeCharacter(target);
+
     this.xp += target.xp;
+    this.addText(`+${target.xp} XP`, '255, 255, 255');
+
     if (this.xp > this.targetXP) {
       this.level++;
       this.xp -= this.targetXP;
       this.targetXP = Math.round(this.targetXP * 0.24) * 5;
+      this.addText(`Level Up!`);
     }
   }
 
@@ -174,6 +179,7 @@ class Enemy extends Character {
   constructor(game, x, y, data) {
     super(game, x, y, data);
     this.type = 'enemy';
+    this.textColour = '48, 128, 16';
   }
 
   isEnemy(type) {

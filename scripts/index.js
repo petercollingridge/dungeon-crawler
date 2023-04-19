@@ -288,8 +288,8 @@ window.addEventListener('load', function() {
       this.textController.update(dt);
     }
 
-    addText(x, y, text) {
-      this.textController.add(x, y, text);
+    addText(x, y, text, colour) {
+      this.textController.add(x, y, text, colour);
     }
 
     startPlayerTurn() {

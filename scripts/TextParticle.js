@@ -33,26 +33,27 @@ class TextController {
     this.particles.forEach(particle => particle.draw(ctx));
   }
 
-  add(x, y, text) {
-    const Particle = new TextParticle(x, y, text);
+  add(x, y, text, colour) {
+    const Particle = new TextParticle(x, y, text, colour);
+
     if (this.delay > 0) {
       this.queue.push(Particle);
     } else {
       this.particles.push(Particle);
-      // Don't add more text for 200ms
       this.delay = this.DELAY_TIME;
     }
   }
 }
 
 class TextParticle {
-  constructor(x, y, text, size = 28) {
+  constructor(x, y, text, colour) {
     this.x = x;
     this.y = y;
     this.text = text;
+    this.colour = colour;
     this.alpha = 1.0;
     this.toDelete = false;
-    this.size = size;
+    this.size = 28;
 
     const speed = 1.8;
     const angle = Math.PI * randRange(0.3, 0.7);
@@ -72,7 +73,7 @@ class TextParticle {
   
   draw(ctx) {
     this.font = `${this.size}px Bangers`;
-    ctx.fillStyle = `rgba(255, 0, 0, ${this.alpha})`;
+    ctx.fillStyle = `rgba(${this.colour}, ${this.alpha})`;
     ctx.font = this.font;
     ctx.fillText(this.text, this.x, this.y);
   } 
