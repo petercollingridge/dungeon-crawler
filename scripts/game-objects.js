@@ -158,7 +158,7 @@ class Player extends Character {
     this.xp += target.xp;
     this.addText(`+${target.xp} XP`, '255, 255, 255');
 
-    if (this.xp > this.targetXP) {
+    if (this.xp >= this.targetXP) {
       this.level++;
       this.xp -= this.targetXP;
       this.targetXP = Math.round(this.targetXP * 0.24) * 5;

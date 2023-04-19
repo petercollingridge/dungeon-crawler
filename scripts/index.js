@@ -38,7 +38,16 @@ window.addEventListener('load', function() {
       this.header = document.getElementById('sidebar-header');
       this.contents = document.getElementById('sidebar-contents');
       this.button = document.getElementById('sidebar-btn');
-      this.statsTypes = ['xp', 'gold', 'speed', 'moveRemaining', 'attackValue', 'defendValue', 'health'];
+      this.statsTypes = [
+        'level  ',
+        'xp',
+        'gold',
+        'speed',
+        'moveRemaining',
+        'attackValue',
+        'defendValue',
+        'health'
+      ];
 
       this.button.disabled = true;
       this.button.addEventListener('click', () => {
