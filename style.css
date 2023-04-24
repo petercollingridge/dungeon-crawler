@@ -47,6 +47,31 @@ body {
   margin: 0.4rem;
 }
 
+.stats-bar-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.stats-bar-wrapper>label {
+  margin-right: 0.5rem;
+}
+
+.stats-bar-outer {
+  width: 100%;
+  height: 16px;
+  border-radius: 8px;
+  background-color: #b00;
+}
+
+.stats-bar {
+  width: 80%;
+  height: 16px;
+  border-radius: 8px;
+  /* border: 1px solid white; */
+  background-color: rgb(155, 150, 240);
+}
+
 button {
   padding: 0.4rem 0.6rem;
   font-size: 100%;

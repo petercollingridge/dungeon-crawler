@@ -17,9 +17,13 @@ class Character extends GameObject {
   constructor(game, x, y, data) {
     super(x, y);
     this.game = game;
+
+    // Set stats
     Object.keys(data).forEach((stat) => {
       this[stat] = data[stat];
-    })
+    });
+
+    this.maxHealth = this.health;
     this.moveRemaining = this.speed;
   }
 

@@ -36,8 +36,10 @@ window.addEventListener('load', function() {
     constructor(game) {
       this.game = game;
       this.header = document.getElementById('sidebar-header');
-      this.contents = document.getElementById('sidebar-contents');
+      this.contents = document.getElementById('inspector-contents');
       this.button = document.getElementById('sidebar-btn');
+      this.moveBar = document.getElementById('move-bar');
+      this.healthBar = document.getElementById('health-bar');
       this.statsTypes = [
         'level  ',
         'xp',
@@ -58,6 +60,8 @@ window.addEventListener('load', function() {
     }
 
     update() {
+      this._update_bars();
+
       const item = this.game.selectedItem;
       this.contents.innerHTML = '';
 
@@ -77,6 +81,17 @@ window.addEventListener('load', function() {
 
         this.contents.appendChild(ul);
       }
+    }
+
+    _update_bars() {
+      const player = this.game.dungeon.player;
+      this._update_bar(this.moveBar, player, 'moveRemaining', 'speed');
+      this._update_bar(this.healthBar, player, 'health', 'maxHealth');
+    }
+
+    _update_bar(bar, player, key1, key2) {
+      const percent = Math.round(100 * player[key1] / player[key2]);
+      bar.style.width = `${percent}%`;
     }
   }
 
@@ -309,6 +324,7 @@ window.addEventListener('load', function() {
     endPlayerTurn() {
       console.log('End player turn');
       this.UI.button.disabled = false;
+      this.UI.button.focus();
     }
 
     startEnemyTurn() {
