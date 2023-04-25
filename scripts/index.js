@@ -38,8 +38,11 @@ window.addEventListener('load', function() {
       this.header = document.getElementById('sidebar-header');
       this.contents = document.getElementById('inspector-contents');
       this.button = document.getElementById('sidebar-btn');
+
+      this.xpBar = document.getElementById('xp-bar');
       this.moveBar = document.getElementById('move-bar');
       this.healthBar = document.getElementById('health-bar');
+
       this.statsTypes = [
         'level  ',
         'xp',
@@ -85,6 +88,7 @@ window.addEventListener('load', function() {
 
     _update_bars() {
       const player = this.game.dungeon.player;
+      this._update_bar(this.xpBar, player, 'xp', 'targetXP');
       this._update_bar(this.moveBar, player, 'moveRemaining', 'speed');
       this._update_bar(this.healthBar, player, 'health', 'maxHealth');
     }
@@ -92,6 +96,7 @@ window.addEventListener('load', function() {
     _update_bar(bar, player, key1, key2) {
       const percent = Math.round(100 * player[key1] / player[key2]);
       bar.style.width = `${percent}%`;
+      bar.innerHTML = player[key1] || "";
     }
   }
 

@@ -61,7 +61,6 @@ body {
   width: 100%;
   height: 16px;
   border-radius: 8px;
-  background-color: #b00;
 }
 
 .stats-bar {
@@ -69,7 +68,19 @@ body {
   height: 16px;
   border-radius: 8px;
   /* border: 1px solid white; */
-  background-color: rgb(155, 150, 240);
+  background-color: rgb(120, 120, 250);
+  color: white;
+  font-size: 80%;
+  text-align: center;
+  line-height: 17px;
+}
+
+#xp-bar-total, #move-bar-total {
+  background-color: #666; 
+}
+
+#health-bar-total {
+  background-color: #b00;
 }
 
 button {
