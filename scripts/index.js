@@ -110,6 +110,8 @@ window.addEventListener('load', function() {
       this.enemies = [];
       this.drawCount = 0;
 
+      this.tiles = [0,1,2,3,4,5,6,7,8,9].map((n) => document.getElementById(`tile-${n}`));
+
       // Use map to create a grid of tiles
       this.map = [];
       for (let y = 0; y < this.maxY; y++) {
@@ -121,7 +123,8 @@ window.addEventListener('load', function() {
           if (mapRow[x] === '#') {
             tileRow.push({ type: 'wall' });
           } else {
-            const tile = { type: 'floor' }
+            const img = this.tiles[randInt(10) - 1];
+            const tile = { type: 'floor', img };
             tileRow.push(tile);
             // Add tile contents
             if (mapRow[x] === '@') {
@@ -129,6 +132,10 @@ window.addEventListener('load', function() {
               tile.content = this.player;
             } else if (mapRow[x] === '1') {
               const enemy = new Goblin(game, x, y, STATS.goblin);
+              this.enemies.push(enemy);
+              tile.content = enemy;
+            } else if (mapRow[x] === '2') {
+              const enemy = new Orc(game, x, y, STATS.orc);
               this.enemies.push(enemy);
               tile.content = enemy;
             } else if (mapRow[x] === '*') {
@@ -160,16 +167,20 @@ window.addEventListener('load', function() {
             continue;
           }
 
+          const tileX = x * TILE_SIZE;
+
           // Tile visible this time are fully visible, otherwise they are faded
           const opacity = tile.visible === this.drawCount ? 1 : 0.5;
           if (tile.type === 'wall') {
             ctx.fillStyle = `rgb(100, 70, 20, ${opacity})`;
+            ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
           } else {
-            ctx.fillStyle = `rgb(225, 220, 200, ${opacity})`;
+            ctx.drawImage(tile.img, tileX, tileY);
+            if (tile.visible !== this.drawCount ) {
+              ctx.fillStyle = 'rgb(0, 0, 0, 0.6)';
+              ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+            }
           }
-
-          const tileX = x * TILE_SIZE;
-          ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
 
           if (tile.content && opacity === 1) {
             tile.content.draw(ctx, tileX, tileY);

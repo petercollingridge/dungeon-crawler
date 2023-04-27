@@ -9,6 +9,10 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
+#image {
+  display: none;
+}
+
 #wrapper {
   display: flex;
   position: absolute;

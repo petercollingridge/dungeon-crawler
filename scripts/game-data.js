@@ -1,4 +1,4 @@
-const TILE_SIZE = 36;
+const TILE_SIZE = 32;
 const PLAYER_SIZE = TILE_SIZE * 0.44;
 
 const dungeonMap = [
@@ -10,8 +10,8 @@ const dungeonMap = [
   '      # #*       ########### #',
   '      #          #         # #',
   '#######      # 1 #         # #',
-  '    @            #         # #',
-  '                 #         # #',
+  '    @        1   #         # #',
+  '            2    #         # #',
   '#######  #  1    #         # #',
   '      #          #         # #',
   '      #   1      # ####### # #',
@@ -57,5 +57,14 @@ const STATS = {
     level: 1,
     xp: 20,
     critical: 0.01,
+  },
+  orc: {
+    speed: 3,
+    health: 5,
+    attackValue: 4,
+    defendValue: 3,
+    level: 1,
+    xp: 40,
+    critical: 0.02,
   },
 };

@@ -243,36 +243,113 @@ class Goblin extends Enemy {
   }
 
   drawImage(ctx, x, y) {
-    ctx.fillStyle = '#381';
+    const hy = y - this.r * 0.25;
+    const r = this.r * 0.85;
+    ctx.fillStyle = '#392';
+
+    // Head
     ctx.beginPath();
-    ctx.arc(x, y, this.r, 0, Math.PI * 2);
+    ctx.moveTo(x - r, hy);
+    ctx.bezierCurveTo(x - r * 0.9, hy - r * 1.2, x + r * 0.9, hy - r * 1.2, x + r, y);
+    ctx.bezierCurveTo(x + r * 0.35, hy + r * 2, x - r * 0.35, hy + r * 2, x - r, y);
     ctx.closePath();
     ctx.fill();
 
-    const r = this.r;
-    const r2 = r * 1.2;
-    ctx.moveTo(x, y);
-    ctx.lineTo(x - r, y - r2);
-    ctx.lineTo(x - r, y);
-    ctx.lineTo(x + r, y);
-    ctx.lineTo(x + r, y - r2);
+    // Ears
+    const ey = y - this.r * 0.1;
+    const r2 = this.r * 1.1;
+    const r3 = this.r * 1.25;
+    ctx.moveTo(x, ey);
+    ctx.lineTo(x - r2 - 1, ey - r3);
+    ctx.lineTo(x - r2 * 0.8, ey);
+    ctx.lineTo(x + r2 * 0.8, ey);
+    ctx.lineTo(x + r2 + 1, ey - r3);
     ctx.closePath();
     ctx.fill();
 
+    // Eyes
     ctx.fillStyle = '#b00';
     ctx.beginPath();
+    ctx.moveTo(x - 1, y);
+    ctx.lineTo(x - 8, y - 6);
+    ctx.lineTo(x - 6, y - 1);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 1, y);
+    ctx.lineTo(x + 8, y - 6);
+    ctx.lineTo(x + 6, y - 1);
+    ctx.closePath();
+    ctx.fill();
+
+    // Mouth
+    ctx.strokeStyle = '#040';
+    ctx.beginPath();
+    ctx.moveTo(x - 3, y + 4);
+    ctx.lineTo(x, y + 7);
+    ctx.lineTo(x + 3, y + 4);
+    ctx.stroke();
+  }
+}
+
+class Orc extends Enemy {
+  constructor(game, x, y, data) {
+    super(game, x, y, data);
+    this.name = 'orc';
+    this.r = TILE_SIZE * 0.35;
+  }
+
+  drawImage(ctx, x, y) {
+    const r = this.r;
+    const hy = y;
+    ctx.fillStyle = '#271';
+
+    // Head
+    ctx.beginPath();
+    ctx.moveTo(x - r, hy);
+    ctx.bezierCurveTo(x - r * 1.1, hy - r * 1.3, x + r * 1.1, hy - r * 1.3, x + r, y);
+    ctx.bezierCurveTo(x + r * 1.3, hy + r * 1.3, x - r * 1.3, hy + r * 1.3, x - r, y);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ears
+    const ey = y - this.r * 0.1;
+    const r2 = this.r;
+    const r3 = this.r * 1.2;
+    ctx.moveTo(x, ey);
+    ctx.lineTo(x - r2 - 1, ey - r3);
+    ctx.lineTo(x - r2, ey);
+    ctx.lineTo(x + r2, ey);
+    ctx.lineTo(x + r2 + 1, ey - r3);
+    ctx.closePath();
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#800';
+    ctx.beginPath();
     ctx.moveTo(x - 1, y - 1);
-    ctx.lineTo(x - 9, y - 7);
-    ctx.lineTo(x - 7, y - 2);
+    ctx.lineTo(x - 8, y - 6);
+    ctx.lineTo(x - 7, y - 1);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
     ctx.moveTo(x + 1, y - 1);
-    ctx.lineTo(x + 9, y - 7);
-    ctx.lineTo(x + 7, y - 2);
+    ctx.lineTo(x + 8, y - 6);
+    ctx.lineTo(x + 7, y - 1);
     ctx.closePath();
     ctx.fill();
+
+    // Mouth
+    const r4 = this.r * 0.6;
+    ctx.strokeStyle = '#040';
+    ctx.beginPath();
+    ctx.moveTo(x - r4 + 2, y + 3);
+    ctx.lineTo(x - r4, y + 5);
+    ctx.lineTo(x + r4, y + 5);
+    ctx.lineTo(x + r4 - 2, y + 3);
+    ctx.stroke();
   }
 }
 
